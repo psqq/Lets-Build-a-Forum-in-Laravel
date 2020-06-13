@@ -13,7 +13,10 @@
         "laravel/scout": "^3.0",
         "laravel/tinker": "~1.0",
         "predis/predis": "^1.1",
-        "stevebauman/purify": "^2.0"
+        "stevebauman/purify": "^2.0",
+        "symfony/dotenv": "^5.1",
+        "ext-mysqli": "*",
+        "joshtronic/php-loremipsum": "dev-master"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
