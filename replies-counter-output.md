@@ -1,5 +1,20 @@
+Результат выполенения в файле:
 
-Вывод для 100_000 в `threads` с интервалом обхода в 20_000.
+```
+❯ head replies-counter-result.txt 
+Test title  1 - 475
+Test title  2 - 927
+Test title  3 - 410
+Test title  4 - 316
+Test title  5 - 660
+Test title  6 - 239
+Test title  7 - 718
+Test title  8 - 332
+Test title  9 - 608
+Test title  10 - 341
+```
+
+Вывод скрипта для 100_000 в `threads` с интервалом обхода в 20_000.
 
 ```
 ❯ php replies-counter.php
