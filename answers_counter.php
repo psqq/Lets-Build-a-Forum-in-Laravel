@@ -18,9 +18,6 @@ $mysqli = mysqli_connect($host, $user, $pass, $db_name);
 $lipsum = new joshtronic\LoremIpsum();
 
 $test_title = "Test title ";
-//foreach(range(1, 250) as $i) {
-//    $test_title .= "a";
-//}
 
 print_mem("After init");
 
@@ -31,18 +28,19 @@ function progress_bar($done, $total, $info = "", $width = 50)
     return sprintf("%s%%[%s>%s]%s\r", $perc, str_repeat("=", $bar), str_repeat(" ", $width - $bar), $info);
 }
 
-function gen_random_values_for_insert_to_threads($n, $max_titles)
+function make_intsert_query_of_random_values_for_threads($n, $max_titles)
 {
     global $lipsum, $test_title;
-    $s = "";
+    $values = "";
     foreach (range(1, $n) as $i) {
         $t = rand(1, $max_titles);
         $title = "$test_title $t";
         $body = $lipsum->words(rand(1, 4));
-        if ($s) $s .= ",\n";
-        $s .= "(1, 1, '$title', '$body')";
+        $replies_count = rand(0, 1000);
+        if ($values) $values .= ",\n";
+        $values .= "(1, 1, '$title', '$body', $replies_count)";
     }
-    return $s;
+    return "INSERT INTO `threads` (user_id, channel_id, title, body, replies_count) VALUES $values");
 }
 
 $__title_id = 1;
@@ -65,12 +63,12 @@ function gen_values_for_insert_to_replies($n)
 {
     global $lipsum, $test_title, $__title_id;
     $s = "";
+    $count_threads = count_threads();
     foreach (range(1, $n) as $i) {
-        $title = "$test_title $__title_id";
-        $__title_id += 1;
-        $body = $lipsum->words(rand(1, 4));
+        $thread_id = rand(1, $count_threads);
+        $body = $lipsum->sentences(rand(1, 3));
         if ($s) $s .= ",\n";
-        $s .= "(1, 1, '$title', '$body')";
+        $s .= "($thread_id, 1, '$body')";
     }
     return $s;
 }
@@ -83,7 +81,6 @@ function fill_threads_table($n, $N, $max_titles = 100)
         echo progress_bar($i, $N, "Filling threads");
         progress_bar($i, $N, "Filling threads");
         $values = gen_values_for_insert_to_threads($n);
-        mysqli_query($mysqli, "INSERT INTO `threads` (user_id, channel_id, title, body) VALUES $values");
     }
     print_mem("After filling threads");
 }
@@ -93,8 +90,8 @@ function fill_replies_table($n, $N, $max_titles = 100)
     global $mysqli;
     mysqli_query($mysqli, "ALTER TABLE `replies` AUTO_INCREMENT = 1");
     foreach (range(1, $N) as $i) {
-        echo progress_bar($i, $N, "Filling replies_");
-        progress_bar($i, $N, "Filling replies_");
+        echo progress_bar($i, $N, "Filling replies ");
+        progress_bar($i, $N, "Filling replies ");
         $values = gen_values_for_insert_to_threads($n);
         mysqli_query($mysqli, "INSERT INTO `replies` (thread_id, user_id, body) VALUES $values");
     }
@@ -126,7 +123,16 @@ function print_mem($title = "")
     echo "\n\n\n";
 }
 
-fill_threads_table(3000, 10);
+//fill_threads_table(3000, 10);
 //main();
+
+function count_threads() {
+    global $mysqli;
+    $res = mysqli_query($mysqli, "SELECT COUNT(*) FROM threads;");
+    $count = $res->fetch_row();
+    return intval($count[0]);
+}
+
+var_dump(count_threads());
 
 print_mem("end");
